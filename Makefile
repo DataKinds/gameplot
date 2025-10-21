@@ -2,4 +2,7 @@ debug:
 	uvx flask --app gameplot run --debug
 
 compose-build:
-	docker compose up --build --remove-orphans
+	docker compose watch --build --remove-orphans
+
+watch:
+	docker compsoe watch
