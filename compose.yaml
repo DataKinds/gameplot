@@ -1,0 +1,44 @@
+services:
+  debug-web:
+    networks:
+      - gameplot
+    build: .
+    ports:
+      - "5000:5000"
+    develop:
+      # Create a `watch` configuration to update the app
+      # https://docs.docker.com/compose/file-watch/#compose-watch-versus-bind-mounts
+      watch:
+        # Sync the working directory with the `/app` directory in the container
+        - action: sync
+          path: .
+          target: /app
+          # Exclude the project virtual environment — it could be for a
+          # different platform in the container
+          ignore:
+            - .venv/
+
+        # Rebuild the image if dependencies change by checking uv.lock
+        - action: rebuild
+          path: ./uv.lock
+    environment:
+      FLASK_DATABASE_HOST: db
+      FLASK_DATABASE_PORT: 5432
+      FLASK_DATABASE_NAME: postgres
+      FLASK_DATABASE_USER: admin
+      FLASK_DATABASE_PASSWORD: password
+      
+
+  db:
+    image: postgres:latest
+    ports:
+      - 15432:5432
+    networks:
+      - gameplot
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: password
+
+networks:
+  gameplot:
