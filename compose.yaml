@@ -21,7 +21,18 @@ services:
         # Rebuild the image if dependencies change by checking uv.lock
         - action: rebuild
           path: ./uv.lock
+
+        # Rebuild the image if the build steps change
+        - action: rebuild
+          path: ./Dockerfile
+
+        # Rebuild the image if the compose cluster changes
+        - action: rebuild
+          path: ./compose.yaml
+
     environment:
+      FLASK_APP: gameplot
+      FLASK_LOG_LEVEL: info
       FLASK_DATABASE_HOST: db
       FLASK_DATABASE_PORT: 5432
       FLASK_DATABASE_NAME: postgres
