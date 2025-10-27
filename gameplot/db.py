@@ -32,25 +32,31 @@ def teardown_db(exception: BaseException | None = None):
 
 def reset_db():
     """Incredibly dangerous. Gets the current maintenance DB connection and deletes everything from the table. Then makes a new blank DB in its place."""
+    dbname: str = current_app.config["DATABASE_NAME"]
+    logging.warning("Recreating the database %s", dbname)
     with _get_maintenance_db() as db:
-        db.execute(cast(LiteralString, f"DROP DATABASE IF EXISTS {current_app.config["DATABASE_NAME"]}"))
-        db.execute(cast(LiteralString, f"CREATE DATABASE {current_app.config["DATABASE_NAME"]}"))
+        db.execute(cast(LiteralString, f"DROP DATABASE IF EXISTS {dbname} WITH (FORCE)"))
+        db.execute(cast(LiteralString, f"CREATE DATABASE {dbname}"))
 
 def init_db():
     """Loads the schema into the connected DB."""
     db = get_db()
     with current_app.open_resource('schema.sql') as f:
-        q = cast(LiteralString, f.read().decode('utf8')) # type: ignore
-        logging.info("Initializing the DB with the schema %s", q)
-        db.execute(q)
+        with db.cursor() as cur:
+            q = cast(LiteralString, f.read().decode('utf8')) # type: ignore
+            logging.info("Initializing the DB with the schema %s", q)
+            cur.execute(q)
+            db.commit()
 
 def seed_db():
     """Seeds the DB with test data"""
     db = get_db()
     with current_app.open_resource('seed.sql') as f:
-        q = cast(LiteralString, f.read().decode('utf8')) # type: ignore
-        logging.info("Seeding the DB with the initial data %s", q)
-        db.execute(q)
+        with db.cursor() as cur:
+            q = cast(LiteralString, f.read().decode('utf8')) # type: ignore
+            logging.info("Seeding the DB with the initial data %s", q)
+            cur.execute(q)
+            db.commit()
 
 def init_app(app: flask.Flask):
     app.teardown_appcontext(teardown_db)

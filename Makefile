@@ -13,8 +13,7 @@ down:
 watch:
 	docker compose watch
 
-reset-db:
-	docker compose down
+reset-db: down build
 	docker compose up db -d
 	docker compose run web flask init-db
 
