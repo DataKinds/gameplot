@@ -1,11 +1,24 @@
 flask-debug:
 	uvx flask --app gameplot run --debug
 
-compose-build:
+build:
+	docker compose build
+
+up:
 	docker compose up --build --remove-orphans
+
+down:
+	docker compose down
 
 watch:
 	docker compose watch
 
-init-db:
-	docker compose exec web flask init-db
+reset-db:
+	docker compose down
+	docker compose up db -d
+	docker compose run web flask init-db
+
+logs:
+	docker compose logs -f
+
+.PHONY: flask-debug build up watch reset-db logs down

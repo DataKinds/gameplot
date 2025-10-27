@@ -31,7 +31,7 @@ def teardown_db(exception: BaseException | None = None):
         db.close()
 
 def reset_db():
-    """Incredibly dangerous. Gets the current DB connection and deletes everything from the table. Then makes a new blank DB in its place."""
+    """Incredibly dangerous. Gets the current maintenance DB connection and deletes everything from the table. Then makes a new blank DB in its place."""
     with _get_maintenance_db() as db:
         db.execute(cast(LiteralString, f"DROP DATABASE IF EXISTS {current_app.config["DATABASE_NAME"]}"))
         db.execute(cast(LiteralString, f"CREATE DATABASE {current_app.config["DATABASE_NAME"]}"))
@@ -40,13 +40,17 @@ def init_db():
     """Loads the schema into the connected DB."""
     db = get_db()
     with current_app.open_resource('schema.sql') as f:
-        db.execute(f.read().decode('utf8'))
+        q = cast(LiteralString, f.read().decode('utf8')) # type: ignore
+        logging.info("Initializing the DB with the schema %s", q)
+        db.execute(q)
 
 def seed_db():
     """Seeds the DB with test data"""
     db = get_db()
     with current_app.open_resource('seed.sql') as f:
-        db.execute(f.read().decode('utf8'))
+        q = cast(LiteralString, f.read().decode('utf8')) # type: ignore
+        logging.info("Seeding the DB with the initial data %s", q)
+        db.execute(q)
 
 def init_app(app: flask.Flask):
     app.teardown_appcontext(teardown_db)
