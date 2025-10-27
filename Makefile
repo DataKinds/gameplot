@@ -11,11 +11,13 @@ down:
 	docker compose down
 
 watch:
+	xdg-open http://127.0.0.1:5000/
 	docker compose watch
 
 reset-db: down build
 	docker compose up db -d
-	docker compose run web flask init-db
+	docker compose run web flask reset-db
+	docker compose run web flask seed-db
 
 logs:
 	docker compose logs -f

@@ -3,7 +3,6 @@ from typing import Any
 
 from flask import Flask
 
-from . import db, commands
 
 import logging
 
@@ -36,15 +35,15 @@ def create_app(test_config: Any = None):
     except OSError:
         pass
 
+    from . import db, commands, views
     db.init_app(app)
     commands.register_commands(app)
+    views.register_blueprints(app)
 
     # a simple page that says hello
     @app.route('/hello')
     def hello() -> str:
         d = db.get_db()
-        db.reset_db()
-        db.init_db()
         return f'Hello, World! Got db  asdas object {str(d)}'
 
     return app

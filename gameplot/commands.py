@@ -5,12 +5,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import flask
 
-@click.command('init-db')
+@click.command('reset-db')
 def init_db_command():
     """Clear the existing data and create new tables."""
     db.reset_db()
     db.init_db()
-    db.seed_db()
     click.echo('Initialized the database.')
 
 @click.command('seed-db')

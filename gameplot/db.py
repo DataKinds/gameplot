@@ -1,6 +1,5 @@
 import psycopg
-from psycopg import sql
-from datetime import datetime
+from psycopg.rows import namedtuple_row
 from operator import itemgetter
 from typing import cast, LiteralString
 import logging
@@ -22,7 +21,7 @@ def get_db() -> psycopg.Connection:
             itemgetter("DATABASE_HOST", "DATABASE_NAME", "DATABASE_PORT", "DATABASE_USER", "DATABASE_PASSWORD")(current_app.config)
         connString = f"postgresql://{user}:{password}@{host}:{port}/{name}"
         logging.info("Connecing to DB (%s)", connString)
-        g.db = psycopg.connect(connString)
+        g.db = psycopg.connect(connString, row_factory=namedtuple_row)
     return g.db
 
 def teardown_db(exception: BaseException | None = None):

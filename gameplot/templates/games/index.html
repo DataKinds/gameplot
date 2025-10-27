@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Check out all da games{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<ul>
+    <li>Game 1</li>
+    <li>Game 2</li>
+    {% for game in games %}
+        <li>Game <a href="{{ url_for('games.game', id=game.id) }}">{{ game.name }}</a> -- {{ game }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
