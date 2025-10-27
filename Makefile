@@ -6,3 +6,6 @@ compose-build:
 
 watch:
 	docker compose watch
+
+init-db:
+	docker compose exec web flask init-db

@@ -1,5 +1,5 @@
 services:
-  debug-web:
+  web:
     networks:
       - gameplot
     build: .
@@ -26,30 +26,35 @@ services:
         - action: rebuild
           path: ./Dockerfile
 
-        # Rebuild the image if the compose cluster changes
-        - action: rebuild
-          path: ./compose.yaml
-
     environment:
       FLASK_APP: gameplot
-      FLASK_LOG_LEVEL: info
       FLASK_DATABASE_HOST: db
       FLASK_DATABASE_PORT: 5432
-      FLASK_DATABASE_NAME: postgres
-      FLASK_DATABASE_USER: admin
+      FLASK_DATABASE_USER: postgres
+      FLASK_DATABASE_NAME: gameplot
       FLASK_DATABASE_PASSWORD: password
       
 
   db:
     image: postgres:latest
+    restart: always
     ports:
       - 15432:5432
     networks:
       - gameplot
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+    volumes:
+      - postgresql:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgresql:
 
 networks:
   gameplot:

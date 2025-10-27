@@ -14,13 +14,13 @@ def create_app(test_config: Any = None):
 
     # load config vars from environment -- like FLASK_DATABASE_HOST becomes config["DATABASE_HOST"]
     app.config.from_prefixed_env()
-    match f"{app.config["LOG_LEVEL"]}".lower():
+    match app.config.get("LOG_LEVEL", "").lower(): # type: ignore
         case "debug":
             logging.basicConfig(level=logging.DEBUG)
         case "warn":
             logging.basicConfig(level=logging.WARN)
         case _:
-            logging.basicConfig(level=logging.INFO)
+            logging.basicConfig(level=logging.DEBUG)
 
 
     # if test_config is None:
@@ -43,6 +43,8 @@ def create_app(test_config: Any = None):
     @app.route('/hello')
     def hello() -> str:
         d = db.get_db()
+        db.reset_db()
+        db.init_db()
         return f'Hello, World! Got db  asdas object {str(d)}'
 
     return app

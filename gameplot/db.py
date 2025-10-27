@@ -7,14 +7,21 @@ import logging
 import flask
 from flask import current_app, g
 
+def _get_maintenance_db() -> psycopg.Connection:
+    """Returns a connection to the database matching the name of the Postgres user in the config."""
+    host, port, user, password = \
+        itemgetter("DATABASE_HOST", "DATABASE_PORT", "DATABASE_USER", "DATABASE_PASSWORD")(current_app.config)
+    connString = f"postgresql://{user}:{password}@{host}:{port}/{user}"
+    logging.info("Connecing to maintenance DB (%s)", connString)
+    return psycopg.connect(connString, autocommit=True)
 
 def get_db() -> psycopg.Connection:
+    """Returns a connection to the database specified in the config."""
     if 'db' not in g:
-        host, port, dbname, user, password = \
-            itemgetter("DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME", "DATABASE_USER", "DATABASE_PASSWORD")(current_app.config)
-        connString = f"host={host} port={port} dbname={dbname} user={user} password={password}"
+        host, name, port, user, password = \
+            itemgetter("DATABASE_HOST", "DATABASE_NAME", "DATABASE_PORT", "DATABASE_USER", "DATABASE_PASSWORD")(current_app.config)
+        connString = f"postgresql://{user}:{password}@{host}:{port}/{name}"
         logging.info("Connecing to DB (%s)", connString)
-        print("AAAAAAAAAAAAAAAAAAA")
         g.db = psycopg.connect(connString)
     return g.db
 
@@ -25,10 +32,9 @@ def teardown_db(exception: BaseException | None = None):
 
 def reset_db():
     """Incredibly dangerous. Gets the current DB connection and deletes everything from the table. Then makes a new blank DB in its place."""
-    db = get_db()
-    with db.connect(autocommit=True) as conn:
-        conn.execute(cast(LiteralString, f"DROP DATABASE IF EXISTS {current_app.config["DATABASE_NAME"]}"))
-        conn.execute(cast(LiteralString, f"CREATE DATABASE {current_app.config["DATABASE_NAME"]}"))
+    with _get_maintenance_db() as db:
+        db.execute(cast(LiteralString, f"DROP DATABASE IF EXISTS {current_app.config["DATABASE_NAME"]}"))
+        db.execute(cast(LiteralString, f"CREATE DATABASE {current_app.config["DATABASE_NAME"]}"))
 
 def init_db():
     """Loads the schema into the connected DB."""
