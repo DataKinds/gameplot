@@ -1,3 +1,4 @@
+from gameplot.validatable import Validatable
 from gameplot.db import get_db
 from gameplot.queries import *
 from typing import cast
@@ -7,13 +8,14 @@ from datetime import datetime
 def download_game_title():
     pass
 
-class Job:
+class Job(Validatable):
     payload: str
     status: str
     insert_ts: datetime
     pickup_ts: datetime
     completion_ts: datetime
     result: str
+
 
     def __init__(self, id: int):
         """Constructor: Returns a Job corresponding with the given ID, if it exists."""
