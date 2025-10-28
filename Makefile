@@ -11,7 +11,7 @@ down:
 	docker compose down
 
 watch:
-	xdg-open http://127.0.0.1:5000/
+	-xdg-open http://127.0.0.1:5000/
 	docker compose watch
 
 reset-db: down build
@@ -22,4 +22,7 @@ reset-db: down build
 logs:
 	docker compose logs -f
 
-.PHONY: flask-debug build up watch reset-db logs down
+shell: 
+	docker compose exec web flask shell
+
+.PHONY: flask-debug build up watch reset-db logs down shell
