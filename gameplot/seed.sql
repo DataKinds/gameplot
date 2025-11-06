@@ -4,10 +4,11 @@ INSERT INTO games (name, description, steam_url, itch_url) VALUES
     ;
 
 INSERT INTO jobs (payload, status, worker_id, insert_ts, pickup_ts, completion_ts, result) VALUES
-    ('"foo1"', 'pending', NULL, '11/5/2025', NULL, NULL, NULL),
-    ('"foo2"', 'active', NULL, '11/5/2025', NULL, NULL, NULL),
-    ('"foo8"', 'active', 'asdjhfkl33sdh98', '11/5/2025', NULL, NULL, NULL),
-    ('"foo3"', 'done', NULL, '11/5/2025', NULL, NULL, NULL),
-    ('"foo4"', 'errored', NULL, '11/5/2025', NULL, NULL, NULL),
-    ('"foo5"', 'pending', 'asdfasdljkhas4df', '11/4/2025', NULL, NULL, NULL)
+    ('{"name": "foo1", "args": []}', 'pending', NULL, '11/5/2025', NULL, NULL, NULL),
+    ('{"name": "foo2", "args": []}', 'active', NULL, '11/5/2025', NULL, NULL, NULL),
+    ('{"name": "foo3", "args": []}', 'active', 'asdjhfkl33sdh98', '11/5/2025', NULL, NULL, NULL),
+    ('{"name": "foo4", "args": []}', 'done', NULL, '11/5/2025', NULL, NULL, NULL),
+    ('{"name": "foo5", "args": []}', 'errored', NULL, '11/5/2025', NULL, NULL, NULL),
+    ('{"name": "foo6", "args": []}', 'pending', 'asdfasdljkhas4df', '11/4/2025', NULL, NULL, NULL),
+    ('{"name": "test", "args": [1,2,3]}', 'pending', 'asdfasdljkhas4df', '11/4/2025', NULL, NULL, NULL)
     ;

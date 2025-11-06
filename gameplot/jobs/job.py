@@ -1,10 +1,15 @@
 from gameplot.validatable import Validatable
 from gameplot.db import get_db
 from gameplot.queries import *
-from typing import NamedTuple
+from . import router
+from typing import NamedTuple, Any
 import logging
+logger = logging.getLogger(__name__)
+
 from datetime import datetime
 from dataclasses import dataclass
+import json
+import traceback
 
 def download_game_title():
     pass
@@ -12,13 +17,13 @@ def download_game_title():
 @dataclass
 class Job(Validatable):
     id: int
-    payload: str
+    payload: Any
     status: str
     worker_id: str
     insert_ts: datetime
     pickup_ts: datetime
     completion_ts: datetime
-    result: str
+    result: Any
 
     @classmethod
     def from_namedtuple(cls, other: NamedTuple | None):
@@ -61,7 +66,7 @@ class Job(Validatable):
         with get_db() as db:
             q = Q(I.FINISH_JOB, job_id, worker_id, 'done', result)
             cur = db.execute(q)
-            return cls.from_namedtuple(cur.fetchone())
+        return cls.from_namedtuple(cur.fetchone())
     
     @classmethod
     def post_error(cls, job_id: int, worker_id: str, err: str) -> Job | None:
@@ -71,14 +76,25 @@ class Job(Validatable):
             cur = db.execute(q)
             return cls.from_namedtuple(cur.fetchone())
 
-    def kickoff(self):
-        """Executes a job based on its payload.
-        Payload should have 3 keys: function, kwargs, and args."""
+    @classmethod
+    def enqueue(cls, job_name: str, *job_args) -> Job:
+        """Constructor: Adds a job to the job queue."""
+        with get_db() as db:
+            payload = json.dumps({'name': job_name, 'args': job_args})
+            q = Q(I.POST_NEW_JOB, payload)
+            cur = db.execute(q)
+            return cls.from_namedtuple(cur.fetchone())
 
-        match self.payload:
-            case "download":
-                download_game_title()
-            case _:
-                logging.info("Got bad payload %s", self.payload)
-
-
+    def route(self) -> Job | None:
+        """Routes and executes a job based on its payload. Payload should have 2 keys: name and args.
+        Returns the updated job if we executed."""
+        assert self.status == 'active', """If you're executing a job, it should be an active one. You can try calling something like Job.try_claim(id).route(id)."""
+        if 'name' not in self.payload or 'args' not in self.payload:
+            logger.error("Got a malformed payload from a job: %s", self.payload)
+        try:
+            result = router.route_job(self.payload['name'], self.payload['args'])
+            return self.post_result(self.id, self.worker_id, json.dumps(result))
+        except Exception as e:
+            tb = traceback.format_exc()
+            logger.error("Got a failure from a job! It looks like this: %s", tb)
+            return self.post_error(self.id, self.worker_id, json.dumps(tb))

@@ -16,7 +16,7 @@ watch:
 
 reset-db: 
 	docker compose down db web
-	docker compose up --build -d db web
+	docker compose up --build --remove-orphans -d db web
 	docker compose run web flask reset-db
 	docker compose run web flask seed-db
 

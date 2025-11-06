@@ -1,6 +1,8 @@
 from enum import Enum, auto
 from typing import Callable, Any, TYPE_CHECKING, cast, LiteralString
 from psycopg.sql import SQL, Composed
+import logging
+logger = logging.getLogger(__name__)
 
 class I(Enum):
     """The Index of which queries exist"""
@@ -9,6 +11,7 @@ class I(Enum):
     GET_NEXT_JOB        = auto()
     TRY_CLAIM_NEXT_JOB  = auto()
     GET_CLAIMED_JOB     = auto()
+    POST_NEW_JOB        = auto()
     FINISH_JOB          = auto()
 
 _Q: dict[I, str] = {}
@@ -20,7 +23,8 @@ FROM jobs
 WHERE status = 'pending'
 ORDER BY insert_ts
 FOR NO KEY UPDATE
-LIMIT 1"""
+LIMIT 1
+"""
 
 _Q[I.TRY_CLAIM_NEXT_JOB] = """
 UPDATE jobs 
@@ -32,12 +36,18 @@ WHERE id = (
     ORDER BY insert_ts
     FOR NO KEY UPDATE
     LIMIT 1)
-RETURNING jobs.*"""
+RETURNING jobs.*
+"""
 
 _Q[I.GET_CLAIMED_JOB] = """
 SELECT * from jobs
 WHERE status = 'active' AND worker_id = {}
 LIMIT 1
+"""
+
+_Q[I.POST_NEW_JOB] = """
+INSERT INTO jobs (payload, status, insert_ts) VALUES ({}, 'pending', NOW())
+RETURNING *
 """
 
 _Q[I.FINISH_JOB] = """
@@ -50,7 +60,9 @@ WHERE id = (
     ORDER BY insert_ts
     FOR NO KEY UPDATE
     LIMIT 1)
-RETURNING jobs.*"""
+RETURNING jobs.*
+"""
 
 def Q(selection: I, *args) -> Composed:
+    logger.debug(f"Query handler produced: {SQL(_Q[selection]).format(*args)}")
     return SQL(_Q[selection]).format(*args)
