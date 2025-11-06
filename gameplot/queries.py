@@ -42,7 +42,7 @@ LIMIT 1
 
 _Q[I.FINISH_JOB] = """
 UPDATE jobs 
-SET status = 'done', completion_ts = NOW(), result = {2}
+SET status = {2}, completion_ts = NOW(), result = {3}
 WHERE id = (
     SELECT id
     FROM jobs
