@@ -14,8 +14,9 @@ watch:
 	-xdg-open http://127.0.0.1:5000/
 	docker compose watch
 
-reset-db: down build
-	docker compose up db -d
+reset-db: 
+	docker compose down db web
+	docker compose up --build -d db web
 	docker compose run web flask reset-db
 	docker compose run web flask seed-db
 
