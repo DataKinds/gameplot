@@ -1,5 +1,6 @@
 import click
-from . import db
+import time
+from . import db, jobs
 import logging
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,14 @@ def seed_db_command():
 @click.command('worker')
 def run_worker():
     """Start polling the database for pending jobs."""
-    logger.error("IMPLEMENT ME!")
+    worker_id = "TODO CHANGE ME"
+    while True:
+        logger.info("Polling DB for jobs for worker '%s'...", worker_id)
+        job = jobs.Job.try_claim(worker_id)
+        if job is not None:
+            logger.info("Got job with payload %s", job.payload)
+            job.route()
+        time.sleep(5)
 
 def register_commands(app: flask.Flask):
     """Register all commands with flask."""

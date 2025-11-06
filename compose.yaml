@@ -33,6 +33,30 @@ services:
       FLASK_DATABASE_USER: postgres
       FLASK_DATABASE_NAME: gameplot
       FLASK_DATABASE_PASSWORD: password
+
+  worker:
+    networks:
+      - gameplot
+    build: .
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - .venv/
+        - action: rebuild
+          path: ./uv.lock
+        - action: rebuild
+          path: ./Dockerfile
+    entrypoint: flask --app gameplot worker 
+    environment:
+      FLASK_APP: gameplot
+      FLASK_DATABASE_HOST: db
+      FLASK_DATABASE_PORT: 5432
+      FLASK_DATABASE_USER: postgres
+      FLASK_DATABASE_NAME: gameplot
+      FLASK_DATABASE_PASSWORD: password
       
 
   db:
