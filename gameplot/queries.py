@@ -4,12 +4,21 @@ from psycopg.sql import SQL, Composed
 
 class I(Enum):
     """The Index of which queries exist"""
-    GET_JOB_BY_ID = auto()
-    GET_NEXT_JOB = auto()
+    GET_JOB_BY_ID       = auto()
+    GET_NEXT_JOB        = auto()
+    TRY_CLAIM_NEXT_JOB  = auto()
 
 _Q: dict[I, str] = {}
 _Q[I.GET_JOB_BY_ID] = "SELECT * FROM jobs WHERE id = {}"
 _Q[I.GET_NEXT_JOB] = """
+SELECT * 
+FROM jobs
+WHERE status = 'pending'
+ORDER BY insert_ts
+LIMIT 1
+"""
+
+_Q[I.TRY_CLAIM_NEXT_JOB] = """
 SELECT * 
 FROM jobs
 WHERE status = 'pending'
