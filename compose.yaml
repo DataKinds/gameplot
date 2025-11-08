@@ -28,6 +28,7 @@ services:
 
     environment:
       FLASK_APP: gameplot
+      FLASK_SECRET_KEY: YOU_REALLY_NEED_TO_CHANGE_ME_BEFORE_DEPLOY
       FLASK_DATABASE_HOST: db
       FLASK_DATABASE_PORT: 5432
       FLASK_DATABASE_USER: postgres

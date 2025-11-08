@@ -15,5 +15,6 @@ INSERT INTO jobs (payload, status, worker_id, insert_ts, pickup_ts, completion_t
 
 INSERT INTO users (email, password) VALUES
     ('example@poopoo.com', 'asdfg'),
-    ('admin@doodoo.com', 'qwerty')
+    ('admin@doodoo.com', 'scrypt:32768:8:1$qSRVmEJHCLpgeRPP$44b1a5b52fd8185ffa04b35ec3b5abd4bb7af1933ed1cd885f83e2a8fb298b6fb5bdec26e15e5ea7b9e7ff66581a67f1841d11c59f56138a0e41d00eae74cd56')
     ;
+-- admin@doodoo.com & password 

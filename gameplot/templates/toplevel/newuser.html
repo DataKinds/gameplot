@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}New user{% endblock %}
+
+{% block header %}
+<h1>Make a new user for Gameplot!</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post" action="{{ url_for('toplevel.newuser') }}">
+    <div>
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email" placeholder="Enter your email here...">
+    </div>
+
+    <div>
+        <label for="email">Password</label>
+        <input type="text" name="password" id="password" placeholder="Enter your email here...">
+    </div>
+
+    <button type="submit">Create account</button>
+</form>
+{% endblock %}

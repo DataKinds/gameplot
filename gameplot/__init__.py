@@ -33,10 +33,11 @@ def create_app(test_config: Any = None):
     except OSError:
         pass
 
-    from . import commands, db, views
+    from . import commands, db, views, auth
     db.init_app(app)
     commands.register_commands(app)
     views.register_blueprints(app)
+    auth.init_app(app)
 
     # a simple page that says hello
     @app.route('/hello')

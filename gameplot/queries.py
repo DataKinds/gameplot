@@ -16,8 +16,10 @@ class I(Enum):
     POST_NEW_JOB        = auto()
     FINISH_JOB          = auto()
     # User session queries
+    GET_USER_FROM_TOKEN = auto()
     CHECK_TOKEN = auto()
     NEW_TOKEN = auto()
+    PRUNE_TOKENS = auto()
     # User queries
     NEW_USER = auto()
     GET_USER = auto()
@@ -71,6 +73,13 @@ WHERE id = (
 RETURNING jobs.*
 """
 
+_Q[I.GET_USER_FROM_TOKEN] = """
+SELECT * FROM users 
+JOIN user_sessions ON user_id = id
+WHERE session_id = {} AND expires_on > NOW()
+LIMIT 1
+"""
+
 # Arguments: session ID to check, and the amount of time to bump the queried token's validity forward
 _Q[I.CHECK_TOKEN] = """
 WITH active_user AS (
@@ -85,14 +94,22 @@ WHERE active_user.session_id = user_sessions.session_id
 RETURNING active_user.*
 """
 
+# TODO: this should be scheduled every so often
+_Q[I.PRUNE_TOKENS] = """
+DELETE FROM user_sessions WHERE expires_on < NOW()
+"""
+
 _Q[I.NEW_TOKEN] = """
-DELETE FROM user_sessions WHERE expires_on < NOW();
-INSERT INTO user_sessions (session_id, expires_on, user_id) VALUES (uuidv4(), NOW() + {}, {})
+INSERT INTO user_sessions (session_id, user_id, expires_on) VALUES (uuidv4(), {}, NOW() + {})
 RETURNING session_id
 """
 
 _Q[I.GET_USER] = """
 SELECT * FROM users WHERE email = {}
+"""
+
+_Q[I.NEW_USER] = """
+INSERT INTO users (email, password) VALUES ({}, {}) RETURNING *
 """
 
 def Q(selection: I, *args) -> Composed:

@@ -1,24 +1,47 @@
-from flask import Blueprint, redirect, render_template
+from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
 
-from gameplot.auth import login_required, login_user
+from gameplot.auth import log_user_in, login_required, new_user, log_out
 from gameplot.db import get_db
 
 bp = Blueprint('toplevel', __name__, url_prefix='/')
 
 @bp.route('/', methods=['GET'])
 def index() -> str:
-    return "Hello world!! Gameplot v0"
+    return render_template("toplevel/index.html")
+
+
+@bp.route('/newuser', methods=['GET', 'POST'])
+def newuser():
+    match request.method:
+        case 'GET':
+            return render_template("toplevel/newuser.html")
+        case 'POST':
+            user = new_user(request.form['email'], request.form['password'])
+            flash("Now you must log in.")
+            return redirect(url_for('toplevel.login'))
 
 @bp.route('/login', methods=['GET', 'POST'])
-def login() -> str:
-    return "Login using the form below"
+def login():
+    match request.method:
+        case 'GET':
+            return render_template("toplevel/login.html")
+        case 'POST':
+            user = log_user_in(request.form['email'], request.form['password'])
+            if user is None:
+                flash("Failed to log in.")
+                return redirect(url_for('toplevel.login'))
+            flash(f"You're logged in! Hi, {user.email}")
+            return redirect(url_for('toplevel.index'))
+        case _: pass
 
 @bp.route('/needsauth', methods=['GET', 'POST'])
 @login_required
-def needsauth() -> str:
+def needsauth(user) -> str:
     return "You found my special page >:)"
 
 
-@bp.route('/logout', methods=['POST'])
+@bp.route('/logout', methods=['GET'])
 def logout():
-    return redirect('toplevel.index')
+    log_out()
+    flash("You've been logged out!")
+    return redirect(url_for('toplevel.index'))

@@ -1,9 +1,16 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} :3</title>
+<title>:3 {% block title %}{% endblock %} :3</title>
 <nav>
     <h1>Gameplot</h1>
+    {% if current_user() %}
+        Hello {{ current_user().email }}!! <a href="{{ url_for('toplevel.logout') }}">Click here to log out</a>
+    {% else %}
+        You're not logged in right now. <a href="{{ url_for('toplevel.login') }}">Perhaps you'd like to log in?</a>
+    {% endif %}
+
     <ul>
         <li><a href="{{ url_for('toplevel.index') }}">Home</a></li>
+        <li><a href="{{ url_for('toplevel.newuser') }}">Create account</a></li>
     </ul>
 </nav>
 <section class="content">
