@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+
 from gameplot.db import get_db
 
 bp = Blueprint('toplevel', __name__, url_prefix='/')

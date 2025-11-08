@@ -1,10 +1,14 @@
-import click
-import time
-from . import db, jobs
 import logging
+import time
+
+import click
+
+from . import db, jobs
+
 logger = logging.getLogger(__name__)
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     import flask
 

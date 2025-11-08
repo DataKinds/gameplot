@@ -1,7 +1,9 @@
-from enum import Enum, auto
-from typing import Callable, Any, TYPE_CHECKING, cast, LiteralString
-from psycopg.sql import SQL, Composed
 import logging
+from enum import Enum, auto
+from typing import TYPE_CHECKING, Any, Callable, LiteralString, cast
+
+from psycopg.sql import SQL, Composed
+
 logger = logging.getLogger(__name__)
 
 class I(Enum):
@@ -13,6 +15,11 @@ class I(Enum):
     GET_CLAIMED_JOB     = auto()
     POST_NEW_JOB        = auto()
     FINISH_JOB          = auto()
+    # User session queries
+    CHECK_TOKEN = auto()
+    NEW_TOKEN = auto()
+    # User queries
+    NEW_USER = auto()
 
 _Q: dict[I, str] = {}
 _Q[I.GET_JOB_BY_ID] = "SELECT * FROM jobs WHERE id = {}"
@@ -61,6 +68,17 @@ WHERE id = (
     FOR NO KEY UPDATE
     LIMIT 1)
 RETURNING jobs.*
+"""
+
+_Q[I.CHECK_TOKEN] = """
+SELECT * FROM users 
+JOIN user_sessions ON user_id = id
+WHERE session_id = {} AND expires_on > NOW()
+"""
+
+_Q[I.NEW_TOKEN] = """
+INSERT INTO user_sessions (session_id, expires_on, user_id) VALUES (uuidv4(), NOW() + {}, {})
+RETURNING session_id
 """
 
 def Q(selection: I, *args) -> Composed:

@@ -12,3 +12,8 @@ INSERT INTO jobs (payload, status, worker_id, insert_ts, pickup_ts, completion_t
     ('{"name": "foo6", "args": []}', 'pending', 'asdfasdljkhas4df', '11/4/2025', NULL, NULL, NULL),
     ('{"name": "test", "args": [1,2,3]}', 'pending', 'asdfasdljkhas4df', '11/4/2025', NULL, NULL, NULL)
     ;
+
+INSERT INTO users (email, password) VALUES
+    ('example@poopoo.com', 'asdfg'),
+    ('admin@doodoo.com', 'qwerty')
+    ;

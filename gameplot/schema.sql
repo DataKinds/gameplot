@@ -27,7 +27,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE user_sessions (
-    session_id      char(256) PRIMARY KEY,
+    session_id      char(36) PRIMARY KEY,
     expires_on      timestamp NOT NULL,
     user_id         integer REFERENCES users
 );

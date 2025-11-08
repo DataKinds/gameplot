@@ -1,5 +1,6 @@
-from typing import List, Any
 import logging
+from typing import Any, List
+
 logger = logging.getLogger(__name__)
 
 def route_job(job_name: str, job_args: List[Any]) -> Any:

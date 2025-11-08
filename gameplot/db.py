@@ -1,11 +1,13 @@
-import psycopg
-from psycopg_pool import ConnectionPool
-from psycopg.rows import namedtuple_row
-from operator import itemgetter
-from typing import cast, LiteralString
 import logging
+from operator import itemgetter
+from typing import LiteralString, cast
+
 import flask
+import psycopg
 from flask import current_app, g
+from psycopg.rows import namedtuple_row
+from psycopg_pool import ConnectionPool
+
 
 def _get_maintenance_db() -> psycopg.Connection:
     """Returns a connection to the database matching the name of the Postgres user in the config."""

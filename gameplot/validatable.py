@@ -1,7 +1,7 @@
 import inspect
 import re
-from dataclasses import dataclass
 from abc import ABC
+from dataclasses import dataclass
 
 
 class Validatable(ABC):

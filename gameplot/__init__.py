@@ -1,13 +1,11 @@
+import logging
 import os
 from typing import Any
 
-from flask import Flask
-
-
-import logging
-
 
 def create_app(test_config: Any = None):
+    from flask import Flask
+
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
@@ -35,7 +33,7 @@ def create_app(test_config: Any = None):
     except OSError:
         pass
 
-    from . import db, commands, views
+    from . import commands, db, views
     db.init_app(app)
     commands.register_commands(app)
     views.register_blueprints(app)

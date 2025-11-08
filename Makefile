@@ -26,4 +26,7 @@ logs:
 shell: 
 	docker compose exec web flask shell
 
+fmt:
+	uvx isort .
+
 .PHONY: flask-debug build up watch reset-db logs down shell
