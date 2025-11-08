@@ -29,4 +29,4 @@ shell:
 fmt:
 	uvx isort .
 
-.PHONY: flask-debug build up watch reset-db logs down shell
+.PHONY: flask-debug build up watch reset-db logs down shell fmt

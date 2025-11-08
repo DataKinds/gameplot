@@ -8,6 +8,8 @@ from flask import current_app, g
 from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
 
+from .queries import *
+
 
 def _get_maintenance_db() -> psycopg.Connection:
     """Returns a connection to the database matching the name of the Postgres user in the config."""

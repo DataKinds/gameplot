@@ -20,6 +20,7 @@ class I(Enum):
     NEW_TOKEN = auto()
     # User queries
     NEW_USER = auto()
+    GET_USER = auto()
 
 _Q: dict[I, str] = {}
 _Q[I.GET_JOB_BY_ID] = "SELECT * FROM jobs WHERE id = {}"
@@ -70,15 +71,28 @@ WHERE id = (
 RETURNING jobs.*
 """
 
+# Arguments: session ID to check, and the amount of time to bump the queried token's validity forward
 _Q[I.CHECK_TOKEN] = """
-SELECT * FROM users 
-JOIN user_sessions ON user_id = id
-WHERE session_id = {} AND expires_on > NOW()
+WITH active_user AS (
+    SELECT * FROM users 
+    JOIN user_sessions ON user_id = id
+    WHERE session_id = {} AND expires_on > NOW()
+    LIMIT 1
+)
+UPDATE user_sessions SET expires_on = NOW() + {}
+FROM active_user
+WHERE active_user.session_id = user_sessions.session_id
+RETURNING active_user.*
 """
 
 _Q[I.NEW_TOKEN] = """
+DELETE FROM user_sessions WHERE expires_on < NOW();
 INSERT INTO user_sessions (session_id, expires_on, user_id) VALUES (uuidv4(), NOW() + {}, {})
 RETURNING session_id
+"""
+
+_Q[I.GET_USER] = """
+SELECT * FROM users WHERE email = {}
 """
 
 def Q(selection: I, *args) -> Composed:

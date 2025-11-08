@@ -1,4 +1,8 @@
+import json
 import logging
+import traceback
+from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, NamedTuple
 
 from gameplot.db import get_db
@@ -8,12 +12,6 @@ from gameplot.validatable import Validatable
 from . import router
 
 logger = logging.getLogger(__name__)
-
-import json
-import traceback
-from dataclasses import dataclass
-from datetime import datetime
-
 
 def download_game_title():
     pass
