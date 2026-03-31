@@ -46,6 +46,8 @@ services:
           target: /app
           ignore:
             - .venv/
+            - __pycache__/
+            - .vscode/
         - action: rebuild
           path: ./uv.lock
         - action: rebuild
@@ -58,7 +60,34 @@ services:
       FLASK_DATABASE_USER: postgres
       FLASK_DATABASE_NAME: gameplot
       FLASK_DATABASE_PASSWORD: password
+
+  temporal-worker:
+    networks:
+      - gameplot
+    build: hello-temporal
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - .venv/
+            - __pycache__/
+            - .vscode/
+        - action: rebuild
+          path: ../uv.lock
+        - action: rebuild
+          path: ./Dockerfile
+
       
+  temporal:
+    image: temporalio/temporal:latest
+    ports:
+      - "8233:8233"
+    networks:
+      - gameplot
+    entrypoint: temporal server start-dev --ip 0.0.0.0
+    
 
   db:
     image: postgres:latest
