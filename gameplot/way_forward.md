@@ -1,4 +1,4 @@
-gameplot will be a place to record the video games you are playing. it will allow you to review and tag these games. it will allow you to write reviews of these games and hotlink these reviews out-of-context in a publicaly accessible way. 
+gameplot will be a place to record the video games you are playing. it will allow you to review and tag these games. it will allow you to write reviews of these games and hotlink these reviews out-of-context in a publicly accessible way.
 
 ultimately: gameplot is the next step above organizing the games you play in an excel spreadsheet.
 
@@ -71,6 +71,7 @@ ultimately: gameplot is the next step above organizing the games you play in an 
 * the homepage
     * spreadsheet widget immediately at the top, reduced in size to only show a few rows
     * "what's new" block: site updates, recently added games, recently reviewed games
+    * post-MVP: the review feed (see below)
 * the "request a game" page
     * accepts a game title and a link to a webpage that is associated with said game
     * will operate on a set of whitelisted URLs that are displayed to the user -- sites for which we've developed connectors to scrape a banner image or a basic decsription
@@ -94,6 +95,9 @@ ultimately: gameplot is the next step above organizing the games you play in an 
 * user-applied tags on games (as a substitute for having various lists of games ala goodreads)
 * top-N view of user-applied tags above
 * filtering for subsets of your games on the spreadsheet
+* the review feed
+    * you should be able to follow a user 
+    * this adds their activity to a chronological timeline ("feed") showing when they start, stop, and review games
 * the whole subscription service -- see featureset below, none of these overlap with the mvp
 
 
