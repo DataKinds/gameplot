@@ -1,6 +1,7 @@
-from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
+from flask import (Blueprint, Response, flash, redirect, render_template,
+                   request, url_for)
 
-from gameplot.auth import log_user_in, login_required, new_user, log_out
+from gameplot.auth import log_out, log_user_in, login_required, new_user
 from gameplot.db import get_db
 
 bp = Blueprint('toplevel', __name__, url_prefix='/')

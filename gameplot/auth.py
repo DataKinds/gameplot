@@ -1,7 +1,8 @@
 from functools import wraps
 from typing import Any, NamedTuple
 
-from flask import Flask, current_app, g, redirect, render_template, request, session
+from flask import (Flask, current_app, g, redirect, render_template, request,
+                   session)
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .db import I, Q, get_db
