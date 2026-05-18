@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=.python-version,target=.python-version \
-    uv sync --locked --no-install-project --no-dev 
+    uv sync --frozen --no-install-project --no-dev 
     
 # Then, add the rest of the project source code and install it
 # Installing separately from its dependencies allows optimal layer caching
